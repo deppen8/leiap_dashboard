@@ -1,2 +1,5 @@
+python
 pandas
 bokeh
+juypter
+nodejs
