@@ -1,7 +1,7 @@
 import pandas as pd
 
-from bokeh.application import Application
-from bokeh.application.handlers import FunctionHandler
+#from bokeh.application import Application
+#from bokeh.application.handlers import FunctionHandler
 from bokeh.io import output_notebook, show, curdoc
 output_notebook()
 from bokeh.layouts import widgetbox, row, layout
@@ -16,7 +16,7 @@ from bokeh.models import (ColumnDataSource,
 
 df = pd.read_pickle('data.pkl')
 
-def explore_data(doc):
+def explore_data():
     # create empty figure
     p = figure(plot_width=600, plot_height=450, 
                tools=[PanTool(),WheelZoomTool(),BoxZoomTool(),ResetTool()])
@@ -58,59 +58,58 @@ def explore_data(doc):
     weight_min = TextInput(value=str(df['total_weight'].min()), title="Min. weight (g) per point:")
     weight_max = TextInput(value=str(df['total_weight'].max()), title='Max. weight (g) per point:')
 
-    def select_points():
-        # start with the whole dataset
-        selected = df
-        # narrow by selected year(s)/date(s) of survey (start date and end date text entry widgets of the form dd-mm-YYYY)
-        selected = selected[(selected['DataDate']>=start_date.value)&(selected['DataDate']<=end_date.value)]
+def select_points(): #equivalent to "get_dataset()"
+    # start with the whole dataset
+    selected = df
+    # narrow by selected year(s)/date(s) of survey (start date and end date text entry widgets of the form dd-mm-YYYY)
+    selected = selected[(selected['DataDate']>=start_date.value)&(selected['DataDate']<=end_date.value)]
 
-        # narrow by selected surveyor(s)
-        surveyors_val = surveyors_select.value
-        if surveyors_val != ['ALL']:
-            selected = selected[selected['SurveyorId'].isin(surveyors_val)]
+    # narrow by selected surveyor(s)
+    surveyors_val = surveyors_select.value
+    if surveyors_val != ['ALL']:
+        selected = selected[selected['SurveyorId'].isin(surveyors_val)]
 
-        # narrow by selected field(s)
-        fields_val = fields_select.value
-        if fields_val != ['ALL']:
-            selected = selected[selected['FieldNumber'].isin(fields_val)]
+    # narrow by selected field(s)
+    fields_val = fields_select.value
+    if fields_val != ['ALL']:
+        selected = selected[selected['FieldNumber'].isin(fields_val)]
 
-        # narrow by selected production(s)    
-        prods_val = prods_select.value
-        if prods_val != ['ALL']:
-            for p in prods_val:
-                selected = selected[selected[p+'_ct']>0]
+    # narrow by selected production(s)    
+    prods_val = prods_select.value
+    if prods_val != ['ALL']:
+        for p in prods_val:
+            selected = selected[selected[p+'_ct']>0]
 
-        # narrow by artifact count range
-        ct_cols = [c for c in selected.columns if c[-3:]=="_ct"]
-        selected['sub_count'] = selected[ct_cols].apply('sum', axis=1)
-        selected = selected[(selected['sub_count']>=float(count_min.value))&(selected['sub_count']<=float(count_max.value))]
+    # narrow by artifact count range
+    ct_cols = [c for c in selected.columns if c[-3:]=="_ct"]
+    selected['sub_count'] = selected[ct_cols].apply('sum', axis=1)
+    selected = selected[(selected['sub_count']>=float(count_min.value))&(selected['sub_count']<=float(count_max.value))]
 
-        # narrow by artifact weight range
-        wt_cols = [c for c in selected.columns if c[-3:]=="_wt"]
-        selected['sub_weight'] = selected[wt_cols].apply('sum', axis=1)
-        selected = selected[(selected['sub_weight']>=float(weight_min.value))&(selected['sub_weight']<=float(weight_max.value))]    
-        return selected
+    # narrow by artifact weight range
+    wt_cols = [c for c in selected.columns if c[-3:]=="_wt"]
+    selected['sub_weight'] = selected[wt_cols].apply('sum', axis=1)
+    selected = selected[(selected['sub_weight']>=float(weight_min.value))&(selected['sub_weight']<=float(weight_max.value))]    
+    return selected
 
-    def update_plot():
-        df = select_points()
-        point_source.data = dict(easting=df['Easting'].tolist(), northing=df['Northing'].tolist())
+def update_plot():
+    df = select_points()
+    point_source.data = dict(easting=df['Easting'].tolist(), northing=df['Northing'].tolist())
 
-    controls = [start_date, end_date,
-                surveyors_select,
-                fields_select,
-                prods_select,
-                count_min, count_max,
-                weight_min, weight_max]
 
-    for control in controls:
-        control.on_change('value', lambda attr, old, new: update_plot())
+controls = [start_date, end_date,
+            surveyors_select,
+            fields_select,
+            prods_select,
+            count_min, count_max,
+            weight_min, weight_max]
 
-    sizing_mode = 'scale_width'  # 'scale_width' also looks nice with this example
-    inputs = widgetbox(*controls, sizing_mode=sizing_mode)
-    l = layout([[inputs],[p]], sizing_mode=sizing_mode)
-    
-    update_plot()
-    doc.add_root(row(inputs, p))
+for control in controls:
+    control.on_change('value', lambda attr, old, new: update_plot())
 
-plot = Application(FunctionHandler(explore_data))
-show(plot)
+sizing_mode = 'scale_width'  # 'scale_width' also looks nice with this example
+inputs = widgetbox(*controls, sizing_mode=sizing_mode)
+l = layout([[inputs],[p]], sizing_mode=sizing_mode)
+
+update_plot()
+
+curdoc().add_root(row(inputs, p))
