@@ -1,4 +1,7 @@
-jupyter labextension install jupyterlab_bokeh
-
-# Notebooks w/ extensions that auto-run code must be "trusted" to work the first time
-jupyter trust survey_dashboard.ipynb
+# enable nbserverproxy
+jupyter serverextension enable --sys-prefix nbserverproxy
+# install the bokeh server extension so that
+# bokeh launches at startup
+mv bokehserverextension.py ${NB_PYTHON_PREFIX}/lib/python*/site-packages/
+# enable bokeh extension
+jupyter serverextension enable --sys-prefix bokehserverextension
