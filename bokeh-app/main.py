@@ -1,3 +1,4 @@
+from os.path import join, dirname
 import pandas as pd
 
 #from bokeh.application import Application
@@ -67,7 +68,7 @@ def update_plot():
     point_source.data.update(src.data)
 
 
-df = pd.read_pickle('data.pkl')
+df = pd.read_pickle(join(dirname(__file__), 'data.pkl'))
     
 # date widgets
 start_date = TextInput(value=str(df['DataDate'].min().date()), title="Start date (YYYY-MM-DD):")
