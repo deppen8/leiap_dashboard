@@ -1,5 +1,5 @@
 # LEIA Project Survey Dashboard
 
-[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/deppen8/leiap_dashboard.git/master)
+[![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/deppen8/leiap_dashboard/master?urlpath=proxy%2F5006%2Fbokeh-app)
 
 This dashboard can be used interactively in Binder.
