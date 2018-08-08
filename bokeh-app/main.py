@@ -118,6 +118,6 @@ sizing_mode = 'scale_width'  # 'scale_width' also looks nice with this example
 point_source = get_dataset(df)
 p = make_plot(point_source)
 
-l = layout([[controls],[p]], sizing_mode=sizing_mode)
+l = layout([controls, p], sizing_mode=sizing_mode)
 
 curdoc().add_root(l)
