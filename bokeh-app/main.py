@@ -112,12 +112,9 @@ for control in controls:
     control.on_change('value', lambda attr, old, new: update_plot())
 
 sizing_mode = 'scale_width'  # 'scale_width' also looks nice with this example
-# inputs = widgetbox(*controls, sizing_mode=sizing_mode)
-
+inputs = widgetbox(*controls, sizing_mode=sizing_mode)
 
 point_source = get_dataset(df)
 p = make_plot(point_source)
 
-l = layout([controls, p], sizing_mode=sizing_mode)
-
-curdoc().add_root(l)
+curdoc().add_root(row(inputs, p))
