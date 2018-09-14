@@ -18,11 +18,11 @@ from bokeh.tile_providers import STAMEN_TERRAIN
 
 
 def make_plot(point_source):
-    xmin, xmax = df['merc_long'].min(), df['merc_long'].max()
-    ymin, ymax = df['merc_lat'].min(), df['merc_lat'].max()
+    xmin, xmax = df['merc_long'].min()+10, df['merc_long'].max()+10
+    ymin, ymax = df['merc_lat'].min()+10, df['merc_lat'].max()+10
     
     # create empty figure
-    p = figure(plot_width=600, plot_height=450, x_range=(xmin, xmax), y_range=(ymin, ymax),
+    p = figure(plot_width=700, plot_height=700, x_range=(xmin, xmax), y_range=(ymin, ymax),
                x_axis_type="mercator", y_axis_type="mercator",
                tools=[PanTool(),WheelZoomTool(),BoxZoomTool(),ResetTool()])
     p.xaxis[0].formatter = NumeralTickFormatter(format="0")
