@@ -14,17 +14,24 @@ from bokeh.models import (ColumnDataSource,
                           Range1d,
                           HoverTool, PanTool, WheelZoomTool, BoxZoomTool, ResetTool,
                           NumeralTickFormatter)
+from bokeh.tile_providers import STAMEN_TERRAIN
 
 
 def make_plot(point_source):
+    xmin, xmax = df['merc_long'].min(), df['merc_long'].max()
+    ymin, ymax = df['merc_lat'].min(), df['merc_lat'].max()
+    
     # create empty figure
-    p = figure(plot_width=600, plot_height=450, 
+    p = figure(plot_width=600, plot_height=450, x_range=(xmin, xmax), y_range=(ymin, ymax),
+               x_axis_type="mercator", y_axis_type="mercator",
                tools=[PanTool(),WheelZoomTool(),BoxZoomTool(),ResetTool()])
     p.xaxis[0].formatter = NumeralTickFormatter(format="0")
     p.yaxis[0].formatter = NumeralTickFormatter(format="0")
 
+    p.add_tile(STAMEN_TERRAIN)
+
     # plot survey points
-    p.circle(x='easting', y='northing', source=point_source, line_color='red', radius=5, fill_color=None)
+    p.circle(x='merc_long', y='merc_lat', source=point_source, line_color='red', radius=5, fill_color=None)
     
     return p
 
@@ -61,7 +68,7 @@ def get_dataset(df):
     selected['sub_weight'] = selected[wt_cols].apply('sum', axis=1)
     selected = selected[(selected['sub_weight']>=float(weight_min.value))&(selected['sub_weight']<=float(weight_max.value))]    
     
-    return ColumnDataSource(data=dict(easting=selected['Easting'].tolist(), northing=selected['Northing'].tolist()))
+    return ColumnDataSource(data=dict(merc_long=selected['merc_long'].tolist(), merc_lat=selected['merc_lat'].tolist()))
 
 def update_plot():
     src = get_dataset(df)
