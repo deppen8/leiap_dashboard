@@ -18,8 +18,8 @@ from bokeh.tile_providers import STAMEN_TERRAIN
 
 
 def make_plot(point_source):
-    xmin, xmax = df['merc_long'].min()+10, df['merc_long'].max()+10
-    ymin, ymax = df['merc_lat'].min()+10, df['merc_lat'].max()+10
+    xmin, xmax = df['merc_long'].min()-50, df['merc_long'].max()+50
+    ymin, ymax = df['merc_lat'].min()-50, df['merc_lat'].max()+50
     
     # create empty figure
     p = figure(plot_width=700, plot_height=700, x_range=(xmin, xmax), y_range=(ymin, ymax),
